@@ -18,9 +18,7 @@ public class Tree {
             base = new TreeMap();
             String[] split = name.split(" ");
             for (String s1 : split) {
-                if (!base.containsKey(s1)) {
-                    base.put(s1, new TreeMap());
-                }
+                base.computeIfAbsent(s1, v -> new TreeMap());
                 base = base.get(s1);
             }
         }

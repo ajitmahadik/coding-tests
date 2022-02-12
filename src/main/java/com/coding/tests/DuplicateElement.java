@@ -1,6 +1,8 @@
 package com.coding.tests;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class DuplicateElement {
 
@@ -10,27 +12,60 @@ public class DuplicateElement {
         findFirstDuplicateElement(a);
         findFirstDuplicateUsingMap(a);
         findFirstDuplicateElementWithLowerIndex(a);
+
+        System.out.println("Using Java-8");
+        List<Integer> nums = IntStream.of(a).boxed().collect(Collectors.toList());
+
+        System.out.println("Duplicate elements");
+        nums.stream().filter(num -> Collections.frequency(nums, num) > 1).collect(Collectors.toSet()).forEach(System.out::println);
+
+        System.out.println("Remove Duplicate elements");
+        removeDuplicateElements(a);
+
+        System.out.println("Get non-duplicate elements");
+        nums.stream().filter(num -> Collections.frequency(nums, num) == 1).collect(Collectors.toList()).forEach(System.out::println);
+
+        System.out.println("Group element counts");
+        nums.stream().collect(Collectors.groupingBy(num -> num, Collectors.counting())).forEach((k,v) -> System.out.printf("%d appears %d times%n", k, v));
     }
 
-    private static void findFirstDuplicateUsingMap(int[] a) {
+    private static void removeDuplicateElements(int[] nums) {
+        Arrays.sort(nums);
+
+        int n = nums.length;
+        if (n==0 || n==1){
+            IntStream.of(nums).boxed().forEach(i -> System.out.printf("%d ", i));
+        }
+        int[] temp = new int[n];
+        int j = 0;
+        for (int i=0; i<n-1; i++){
+            if (nums[i] != nums[i+1]){
+                temp[j++] = nums[i];
+            }
+        }
+        temp[j++] = nums[n-1];
+        nums = Arrays.copyOf(temp, j);
+        IntStream.of(nums).boxed().forEach(i -> System.out.printf("%d ", i));
+        System.out.println("");
+    }
+
+    private static void findFirstDuplicateUsingMap(int[] numbers) {
         System.out.print("Find first duplicate element using Linked Map: ");
         Map<Integer, Integer> counts = new HashMap<>();
 
-        int i = 0;
-        while (i < a.length) {
-            if (counts.get(a[i]) == null) {
-                counts.put(a[i], 1);
-            } else {
-                int count = counts.get(a[i]);
-                counts.put(a[i], ++count);
-            }
+        for (int num : numbers) {
+            int count = 1;
 
-            i++;
+            if (counts.get(num) != null) {
+                count = counts.get(num);
+                count += 1;
+            }
+            counts.put(num, count);
         }
 
         for (Map.Entry<Integer, Integer> entry : counts.entrySet()) {
             if (entry.getValue() > 1) {
-                System.out.println(entry.getValue());
+                System.out.println(entry.getKey());
                 break;
             }
         }
